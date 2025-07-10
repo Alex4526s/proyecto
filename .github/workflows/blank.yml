@@ -1,55 +1,24 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
     branches:
-      - main  # Solo en la rama main
-  pull_request:
-    branches:
-      - main  # Activar también en pull requests
+      - "main"
 
 jobs:
   build:
+    env:
+      platform: aws
+      region: us-east-1
+      account: 123456789012
     runs-on: ubuntu-latest
-    
+
     steps:
-    # Paso 1: Checkout del código
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: "Mostrar mensaje"
+      run: echo "Hola mundo"
 
-    # Paso 2: Configurar PHP
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-
-    # Paso 3: Instalar dependencias del sistema y PHP
-    - name: Install dependencies
+    - name: "Mostrando variables de entorno"
       run: |
-        sudo apt-get update
-        sudo apt-get install -y php-mbstring php-xml php-mysql unzip
-        composer install --no-progress --no-suggest --prefer-dist
-
-    # Paso 4: Ejecutar las pruebas
-    - name: Run tests
-      run: |
-        vendor/bin/phpunit --coverage-text  # Ejecutar las pruebas PHP
-      continue-on-error: false  # Detener el pipeline si las pruebas fallan
-
-    # Paso 5: Cache de dependencias de Composer (para optimizar tiempos)
-    - name: Cache Composer dependencies
-      uses: actions/cache@v2
-      with:
-        path: ~/.composer/cache
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
-
-    # Paso 6: Despliegue al servidor remoto
-    - name: Deploy to server
-      run: |
-        echo "Desplegando en el servidor..."
-        # Conexión SSH al servidor y comandos de despliegue
-        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} user@your-server "cd /path/to/project && git pull && composer install && php artisan migrate"
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        echo "Esto es el valor de platform: ${{ env.platform }}"
+        echo "Esto es el valor de region: ${{ env.region }}"
+        echo "esto es el valor de account: ${{ env.account }}"
