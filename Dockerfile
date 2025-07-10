@@ -1,24 +1,20 @@
-# Usar una imagen base de PHP
+# Dockerfile
 FROM php:8.0-cli
 
-# Establecer el directorio de trabajo dentro del contenedor
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar el código al contenedor (incluido composer.json y composer.lock)
+# Copiar el código al contenedor (incluido composer.json)
 COPY . /app
 
 # Instalar dependencias de sistema y PHP necesarias para Composer y extensiones PHP
-RUN apt-get update && apt-get install -y \
-    libzip-dev \
-    unzip \
-    curl \
-    git && \
+RUN apt-get update && apt-get install -y libzip-dev unzip curl git && \
     docker-php-ext-install zip && \
     # Instalar Composer
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Asegurarse de que phpunit tenga permisos de ejecución
-RUN chmod +x /app/vendor/bin/phpunit
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    # Instalar y habilitar xdebug
+    pecl install xdebug && \
+    docker-php-ext-enable xdebug
 
 # Instalar las dependencias de PHP con Composer
 RUN composer install
