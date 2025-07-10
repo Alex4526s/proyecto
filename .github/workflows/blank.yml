@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - "main"  # El flujo de trabajo se ejecutará solo cuando haya un push a la rama main
+      - "main"  # Este flujo de trabajo se ejecutará solo cuando haya un push a la rama main
 
 jobs:
   build:
@@ -11,12 +11,12 @@ jobs:
       platform: aws
       region: us-east-1
       account: 123456789012
-      username: ${{ secrets.USERNAME }}
-      password: ${{ secrets.PASSWORD }}
-      PROJECT_VERSION: '1.0.0'  # Definir la versión del proyecto
+      username: ${{ secrets.USERNAME }}  # Utiliza el secreto USERNAME
+      password: ${{ secrets.PASSWORD }}  # Utiliza el secreto PASSWORD
+      PROJECT_VERSION: '1.0.0'  # Versión del proyecto
 
     runs-on: ubuntu-latest  # Utilizamos el runner de Ubuntu
-
+    
     steps:
     # Paso 1: Checkout del código
     - name: "Checkout code"
