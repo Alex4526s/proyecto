@@ -13,25 +13,43 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    # Paso 1: Checkout del código
     - name: Checkout code
       uses: actions/checkout@v2
 
+    # Paso 2: Configurar PHP
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.0'
 
+    # Paso 3: Instalar dependencias del sistema y PHP
     - name: Install dependencies
       run: |
-        sudo apt-get install php-mbstring php-xml php-mysql
-        composer install
+        sudo apt-get update
+        sudo apt-get install -y php-mbstring php-xml php-mysql unzip
+        composer install --no-progress --no-suggest --prefer-dist
 
+    # Paso 4: Ejecutar las pruebas
     - name: Run tests
       run: |
-        vendor/bin/phpunit --coverage-text  # Ejecución de pruebas PHP
+        vendor/bin/phpunit --coverage-text  # Ejecutar las pruebas PHP
+      continue-on-error: false  # Detener el pipeline si las pruebas fallan
 
+    # Paso 5: Cache de dependencias de Composer (para optimizar tiempos)
+    - name: Cache Composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: ~/.composer/cache
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    # Paso 6: Despliegue al servidor remoto
     - name: Deploy to server
       run: |
         echo "Desplegando en el servidor..."
-        # Aquí puedes agregar los comandos de despliegue para tu aplicación, por ejemplo:
-        # ssh user@your-server "cd /path/to/project && git pull && composer install"
+        # Conexión SSH al servidor y comandos de despliegue
+        ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} user@your-server "cd /path/to/project && git pull && composer install && php artisan migrate"
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
