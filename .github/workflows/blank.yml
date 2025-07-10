@@ -14,22 +14,31 @@ jobs:
       username: ${{ secrets.USERNAME }}
       password: ${{ secrets.PASSWORD }}
 
-
     runs-on: ubuntu-latest
     
     steps:
+    # Paso 1: Mostrar un mensaje
     - name: "Mostrar mensaje"
       run: echo "Hola mundo"
 
+    # Paso 2: Mostrando variables de entorno
     - name: "Mostrando variables de entorno"
       run: |
         echo "Esto es el valor de platform: ${{ env.platform }}"
         echo "Esto es el valor de region: ${{ env.region }}"
-        echo "esto es el valor de account: ${{ env.account }}"
-        echo "esto es el valor de username: ${{ env.username }}"
-        echo "esto es el valor de password: ${{ env.password }}"
+        echo "Esto es el valor de account: ${{ env.account }}"
+        echo "Esto es el valor de username: ${{ env.username }}"
+        echo "Esto es el valor de password: ${{ env.password }}"
+
+    # Paso 3: Validación de usuario y contraseña
+    - name: "Mostrando valores solo si el usuario es correcto"
+      if: ${{ env.username != '' && env.password != '' }}
+      run: |
+        echo "El usuario y la contraseña son correctos" 
+
+    # Paso 4: Mostrar valores por defecto
     - name: "Mostrando variables por defecto"
       run: |
         echo "Evento: ${{ toJSON(github.event) }}"
-        echo "Githbu_ACTOR: $GITHUB_ACTOR"
+        echo "GITHUB_ACTOR: $GITHUB_ACTOR"
         echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
