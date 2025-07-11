@@ -1,12 +1,11 @@
 // tests/TestFile.php
 <?php
-
 use PHPUnit\Framework\TestCase;
 
 class TestFile extends TestCase
 {
-    public function testAddition()
+    public function testSuma()
     {
-        $this->assertEquals(2 + 2, 4);
+        $this->assertEquals(4, 2 + 2);
     }
 }
